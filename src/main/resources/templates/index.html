@@ -20,7 +20,9 @@
     <div class="card shadow-sm">
         <div class="row g-0">
             <div class="col-md-4">
-                <img th:src="${ebook.coverUrl}" class="img-fluid rounded-start" alt="cover" onerror="this.src='https://via.placeholder.com/300x400?text=Ebook'">
+                <div style="width:100%;height:400px;background:#eee;display:flex;align-items:center;justify-content:center;border-radius:0.375rem 0 0 0.375rem;">
+                    <span style="color:#999;">Ebook Cover</span>
+                </div>
             </div>
             <div class="col-md-8">
                 <div class="card-body">
@@ -35,7 +37,7 @@
                     </div>
 
                     <div class="d-grid gap-2">
-                        <button class="btn btn-primary" id="btnCheckout">Thanh toán</button>
+                        <button class="btn btn-primary" id="btnCheckout" th:text="#{app.checkout_button}">Checkout</button>
                         <div id="msg" class="text-danger small"></div>
                     </div>
                 </div>
@@ -46,49 +48,50 @@
 
 <script th:inline="javascript">
 (function() {
-    console.log('Page loaded, setting up checkout button');
-    const ebookId = /*[[${ebook.id}]]*/ 1;
-    const btn = document.getElementById('btnCheckout');
-    const msg = document.getElementById('msg');
+    var ebookId = /*[[${ebook.id}]]*/ 1;
+    var btn = document.getElementById('btnCheckout');
+    var msg = document.getElementById('msg');
+    var emailInput = document.getElementById('email');
+    
+    var msgEmailRequired = /*[[#{app.email_required}]]*/ 'Please enter your email';
+    var msgCreating = /*[[#{app.creating_order}]]*/ 'Creating order...';
+    var msgError = /*[[#{app.order_error}]]*/ 'Error:';
     
     if (!btn) {
-        console.error('Button not found!');
+        console.log('Button not found');
         return;
     }
     
-    console.log('Button found, attaching listener');
-    btn.addEventListener('click', async () => {
-        console.log('Button clicked!');
+    btn.addEventListener('click', function(e) {
+        e.preventDefault();
         msg.textContent = '';
-        const email = document.getElementById('email').value.trim();
-        const method = 'VIETQR'; // chọn phương thức tại trang thanh toán
-        console.log('Email:', email, 'Method:', method, 'EbookId:', ebookId);
+        var email = emailInput.value.trim();
         
         if (!email) {
-            msg.textContent = 'Vui lòng nhập email';
+            msg.textContent = msgEmailRequired;
             return;
         }
+        
         btn.disabled = true;
-        btn.textContent = 'Đang tạo đơn...';
-        try {
-            console.log('Sending POST request to /api/orders');
-            const res = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, paymentMethod: method, ebookId: ebookId })
-            });
-            console.log('Response status:', res.status);
-            if (!res.ok) throw new Error('Create order failed: ' + res.status);
-            const data = await res.json();
-            console.log('Order created:', data);
+        var originalText = btn.textContent;
+        btn.textContent = msgCreating;
+        
+        fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email, paymentMethod: 'VIETQR', ebookId: ebookId })
+        }).then(function(res) {
+            if (!res.ok) {
+                throw new Error('Create order failed: ' + res.status);
+            }
+            return res.json();
+        }).then(function(data) {
             window.location.href = '/payment/' + data.secretCode;
-        } catch (e) {
-            console.error('Error:', e);
-            msg.textContent = 'Lỗi: ' + e.message;
-        } finally {
+        }).catch(function(e) {
+            msg.textContent = msgError + ' ' + e.message;
             btn.disabled = false;
-            btn.textContent = 'Thanh toán';
-        }
+            btn.textContent = originalText;
+        });
     });
 })();
 </script>

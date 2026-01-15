@@ -52,6 +52,12 @@
         <div style="display:none;">
             <div id="data-secret" th:text="${secretCode}"></div>
             <div id="data-amount" th:text="${order.amount}"></div>
+            <div id="i18n-success" th:text="#{app.payment_success_redirect}"></div>
+            <div id="i18n-failed" th:text="#{app.order_failed_expired}"></div>
+            <div id="i18n-waiting" th:text="#{app.waiting_payment}"></div>
+            <div id="i18n-error" th:text="#{app.check_status_error}"></div>
+            <div id="i18n-processing" th:text="#{app.processing}"></div>
+            <div id="i18n-mock-success" th:text="#{app.payment_mock_success}"></div>
         </div>
     </div>
 </div>
@@ -63,6 +69,14 @@
     const usdAmount = (vndAmount / 25000).toFixed(2); // VND to USD conversion
     const statusEl = document.getElementById('status');
     const btnRefresh = document.getElementById('btnRefresh');
+    
+    // Get i18n messages
+    const MSG_SUCCESS = document.getElementById('i18n-success').textContent;
+    const MSG_FAILED = document.getElementById('i18n-failed').textContent;
+    const MSG_WAITING = document.getElementById('i18n-waiting').textContent;
+    const MSG_ERROR = document.getElementById('i18n-error').textContent;
+    const MSG_PROCESSING = document.getElementById('i18n-processing').textContent;
+    const MSG_MOCK_SUCCESS = document.getElementById('i18n-mock-success').textContent;
 
     console.log('Secret:', secret, 'VND Amount:', vndAmount, 'USD Amount:', usdAmount);
 
@@ -73,18 +87,18 @@
             const data = await res.json();
             if (data.status === 'PAID') {
                 statusEl.className = 'alert alert-success';
-                statusEl.textContent = 'Thanh toán thành công! Đang chuyển sang trang hoàn tất...';
+                statusEl.textContent = MSG_SUCCESS;
                 setTimeout(() => { window.location.href = '/success?secretCode=' + secret; }, 800);
             } else if (data.status === 'FAILED' || data.status === 'EXPIRED') {
                 statusEl.className = 'alert alert-danger';
-                statusEl.textContent = 'Đơn hàng thất bại/hết hạn. Vui lòng tạo lại.';
+                statusEl.textContent = MSG_FAILED;
             } else {
                 statusEl.className = 'alert alert-info';
-                statusEl.textContent = 'Đang chờ thanh toán...';
+                statusEl.textContent = MSG_WAITING;
             }
         } catch (e) {
             statusEl.className = 'alert alert-warning';
-            statusEl.textContent = 'Lỗi kiểm tra trạng thái';
+            statusEl.textContent = MSG_ERROR;
         }
     }
 
@@ -97,7 +111,7 @@
     if (btnPayPalMock) {
         btnPayPalMock.addEventListener('click', async () => {
             btnPayPalMock.disabled = true;
-            btnPayPalMock.textContent = 'Đang xử lý...';
+            btnPayPalMock.textContent = MSG_PROCESSING;
             try {
                 const res = await fetch('/webhook/paypal/' + secret, {
                     method: 'POST',
@@ -106,12 +120,12 @@
                 });
                 if (!res.ok) throw new Error('Webhook failed');
                 statusEl.className = 'alert alert-success';
-                statusEl.textContent = 'Thanh toán thành công (Mock)! Đang chuyển sang trang hoàn tất...';
+                statusEl.textContent = MSG_MOCK_SUCCESS;
                 setTimeout(() => { window.location.href = '/success?secretCode=' + secret; }, 1500);
             } catch (err) {
                 console.error('PayPal mock error:', err);
                 statusEl.className = 'alert alert-danger';
-                statusEl.textContent = 'Lỗi: ' + err.message;
+                statusEl.textContent = MSG_ERROR + ' ' + err.message;
                 btnPayPalMock.disabled = false;
                 btnPayPalMock.textContent = 'Pay with PayPal (Mock Demo)';
             }
