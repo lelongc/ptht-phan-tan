@@ -1,6 +1,5 @@
 package com.ebook.entity;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,12 +37,6 @@ public class User extends BaseEntity {
 
     private String name;
     private String phone;
-
-    @Builder.Default
-    private Integer totalOrders = 0;
-
-    @Builder.Default
-    private BigDecimal totalSpent = BigDecimal.ZERO;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
