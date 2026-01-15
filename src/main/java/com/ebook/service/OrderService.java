@@ -103,6 +103,12 @@ public class OrderService {
         orderRepository.findBySecretCode(secretCode).ifPresent(order -> order.setStatus(OrderStatus.FAILED));
     }
 
+    @Transactional(readOnly = true)
+    public Order getBySecretCode(String secretCode) {
+        return orderRepository.findBySecretCode(secretCode)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+    }
+
     private User findOrCreateUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseGet(() -> userRepository.save(User.builder()
