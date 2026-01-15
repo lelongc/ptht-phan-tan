@@ -1,0 +1,31 @@
+# Environment
+.env.local
+.env.*.local
+.env
+.env.*.env
+
+# Maven
+target/
+*.jar
+*.war
+pom.xml.tag
+pom.xml.releaseBackup
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+logs/
+*.log
+
+# Cache
+*.class
+.classpath
+.project
