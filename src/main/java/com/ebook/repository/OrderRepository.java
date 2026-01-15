@@ -13,6 +13,8 @@ import com.ebook.enums.OrderStatus;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     Optional<Order> findBySecretCode(String secretCode);
+    
+    Optional<Order> findByPayerEmailAndStatus(String payerEmail, OrderStatus status);
 
     @Query("select o from Order o where o.status = :status and o.expiresAt < :now")
     List<Order> findExpired(@Param("status") OrderStatus status, @Param("now") Instant now);

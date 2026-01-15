@@ -1,0 +1,17 @@
+target/
+.git/
+.gitignore
+README.md
+PLAN_DETAILED.md
+.env.local
+.DS_Store
+node_modules/
+*.log
+.vscode/
+.idea/
+*.iml
+docs/
+stepByStep/
+aws/
+database/
+image/

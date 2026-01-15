@@ -29,7 +29,13 @@ public class OrderController {
     private final PaypalService paypalService;
 
     @PostMapping
-    public ResponseEntity<CreateOrderResponse> createOrder(@Validated @RequestBody CreateOrderRequest request) {
+    public ResponseEntity<?> createOrder(@Validated @RequestBody CreateOrderRequest request) {
+        // Check if email already has a paid order
+        if (orderService.hasEmailPaidOrder(request.email())) {
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "This email has already paid");
+            return ResponseEntity.badRequest().body(error);
+        }
         return ResponseEntity.ok(orderService.createOrder(request));
     }
 

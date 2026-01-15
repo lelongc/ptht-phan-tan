@@ -19,7 +19,7 @@
 
     <div class="card shadow-sm p-4">
         <p class="mb-1"><strong th:text="#{app.ebook_label}">Ebook:</strong> <span th:text="${ebook.title}">Ebook</span></p>
-        <p class="mb-1"><strong th:text="#{app.price_label}">Price:</strong> <span th:text="${order.amount}"></span> VND</p>
+        <p class="mb-1"><strong th:text="#{app.price_label}">Price:</strong> <span th:text="#{app.book_price}"></span> <span th:text="#{app.currency}">USD</span></p>
         <p class="mb-3"><strong th:text="#{app.order_code}">Order Code:</strong> <code th:text="${secretCode}">CODE</code></p>
 
         <div class="text-center mb-4">
@@ -67,9 +67,8 @@
 <script th:inline="javascript">
 (function() {
     const secret = document.getElementById('data-secret').textContent.trim();
-    const vndAmount = parseFloat(document.getElementById('data-amount').textContent.trim());
+    const usdAmount = parseFloat(document.getElementById('data-amount').textContent.trim());
     const clientId = document.getElementById('data-clientid').textContent.trim();
-    const usdAmount = (vndAmount / 25000).toFixed(2);
     const statusEl = document.getElementById('status');
     const btnRefresh = document.getElementById('btnRefresh');
     

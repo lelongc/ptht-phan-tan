@@ -109,6 +109,12 @@ public class OrderService {
                 .orElseThrow(() -> new IllegalArgumentException("Order not found"));
     }
 
+    @Transactional(readOnly = true)
+    public boolean hasEmailPaidOrder(String email) {
+        return orderRepository.findByPayerEmailAndStatus(email, OrderStatus.PAID)
+                .isPresent();
+    }
+
     private User findOrCreateUser(String email) {
         return userRepository.findByEmail(email)
                 .orElseGet(() -> userRepository.save(User.builder()
