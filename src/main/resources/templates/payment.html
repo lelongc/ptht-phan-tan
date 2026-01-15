@@ -38,7 +38,7 @@
                     <img th:src="${qrUrl}" alt="VietQR" class="img-fluid" style="max-width:360px;">
                 </div>
                 <div class="tab-pane fade" id="paypal-panel" role="tabpanel">
-                    <button class="btn btn-primary btn-lg" id="btnPayPalMock" style="margin-top: 20px;" th:text="#{app.paypal_mock}">Pay with PayPal (Mock Demo)</button>
+                    <div id="paypal-container" style="margin-top: 20px;"></div>
                 </div>
             </div>
         </div>
@@ -52,21 +52,24 @@
         <div style="display:none;">
             <div id="data-secret" th:text="${secretCode}"></div>
             <div id="data-amount" th:text="${order.amount}"></div>
+            <div id="data-clientid" th:text="${@environment.getProperty('paypal.client-id')}"></div>
             <div id="i18n-success" th:text="#{app.payment_success_redirect}"></div>
             <div id="i18n-failed" th:text="#{app.order_failed_expired}"></div>
             <div id="i18n-waiting" th:text="#{app.waiting_payment}"></div>
             <div id="i18n-error" th:text="#{app.check_status_error}"></div>
             <div id="i18n-processing" th:text="#{app.processing}"></div>
-            <div id="i18n-mock-success" th:text="#{app.payment_mock_success}"></div>
         </div>
     </div>
 </div>
+
+<!-- PayPal Checkout SDK (loaded dynamically) -->
 
 <script th:inline="javascript">
 (function() {
     const secret = document.getElementById('data-secret').textContent.trim();
     const vndAmount = parseFloat(document.getElementById('data-amount').textContent.trim());
-    const usdAmount = (vndAmount / 25000).toFixed(2); // VND to USD conversion
+    const clientId = document.getElementById('data-clientid').textContent.trim();
+    const usdAmount = (vndAmount / 25000).toFixed(2);
     const statusEl = document.getElementById('status');
     const btnRefresh = document.getElementById('btnRefresh');
     
@@ -76,9 +79,8 @@
     const MSG_WAITING = document.getElementById('i18n-waiting').textContent;
     const MSG_ERROR = document.getElementById('i18n-error').textContent;
     const MSG_PROCESSING = document.getElementById('i18n-processing').textContent;
-    const MSG_MOCK_SUCCESS = document.getElementById('i18n-mock-success').textContent;
 
-    console.log('Secret:', secret, 'VND Amount:', vndAmount, 'USD Amount:', usdAmount);
+    console.log('Secret:', secret, 'USD Amount:', usdAmount);
 
     async function poll() {
         try {
@@ -106,31 +108,64 @@
     poll();
     setInterval(poll, 3000);
 
-    // PayPal Mock Button
-    const btnPayPalMock = document.getElementById('btnPayPalMock');
-    if (btnPayPalMock) {
-        btnPayPalMock.addEventListener('click', async () => {
-            btnPayPalMock.disabled = true;
-            btnPayPalMock.textContent = MSG_PROCESSING;
-            try {
-                const res = await fetch('/webhook/paypal/' + secret, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ transactionId: 'MOCK-' + Date.now() })
-                });
-                if (!res.ok) throw new Error('Webhook failed');
-                statusEl.className = 'alert alert-success';
-                statusEl.textContent = MSG_MOCK_SUCCESS;
-                setTimeout(() => { window.location.href = '/success?secretCode=' + secret; }, 1500);
-            } catch (err) {
-                console.error('PayPal mock error:', err);
-                statusEl.className = 'alert alert-danger';
-                statusEl.textContent = MSG_ERROR + ' ' + err.message;
-                btnPayPalMock.disabled = false;
-                btnPayPalMock.textContent = 'Pay with PayPal (Mock Demo)';
+    // Load PayPal SDK
+    function loadPayPalSDK() {
+        const script = document.createElement('script');
+        script.src = 'https://www.paypal.com/sdk/js?client-id=' + clientId + '&currency=USD';
+        script.async = true;
+        script.onload = function() {
+            if (window.paypal) {
+                paypal.Buttons({
+                    createOrder: async function(data, actions) {
+                        try {
+                            const response = await fetch('/api/orders/' + secret + '/paypal/create-order', {
+                                method: 'POST'
+                            });
+                            const orderData = await response.json();
+                            if (orderData.error) throw new Error(orderData.error);
+                            return orderData.orderId;
+                        } catch (error) {
+                            console.error('Failed to create order:', error);
+                            statusEl.className = 'alert alert-danger';
+                            statusEl.textContent = MSG_ERROR + ' ' + error.message;
+                            throw error;
+                        }
+                    },
+                    onApprove: async function(data, actions) {
+                        try {
+                            statusEl.className = 'alert alert-info';
+                            statusEl.textContent = MSG_PROCESSING;
+                            
+                            const response = await fetch('/api/orders/' + secret + '/paypal/capture?paypalOrderId=' + data.orderID, {
+                                method: 'POST'
+                            });
+                            const result = await response.json();
+                            
+                            if (result.success) {
+                                statusEl.className = 'alert alert-success';
+                                statusEl.textContent = MSG_SUCCESS;
+                                setTimeout(() => { window.location.href = '/success?secretCode=' + secret; }, 1000);
+                            } else {
+                                throw new Error(result.error);
+                            }
+                        } catch (error) {
+                            console.error('Failed to capture order:', error);
+                            statusEl.className = 'alert alert-danger';
+                            statusEl.textContent = MSG_ERROR + ' ' + error.message;
+                        }
+                    },
+                    onError: function(err) {
+                        console.error('PayPal error:', err);
+                        statusEl.className = 'alert alert-danger';
+                        statusEl.textContent = MSG_ERROR;
+                    }
+                }).render('#paypal-container');
             }
-        });
+        };
+        document.head.appendChild(script);
     }
+
+    loadPayPalSDK();
 })();
 </script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

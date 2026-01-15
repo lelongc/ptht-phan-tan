@@ -69,7 +69,7 @@ public class OrderService {
             qrUrl = vietQRService.buildQrImageUrl(ebook.getPrice(), addInfo);
             paymentUrl = qrUrl;
         } else {
-            paymentUrl = paypalService.createPaymentUrl(secretCode);
+            paymentUrl = "paypal"; // PayPal will be handled in payment page
         }
 
         return new CreateOrderResponse(secretCode, paymentUrl, qrUrl);
@@ -86,7 +86,7 @@ public class OrderService {
             case EXPIRED -> "Expired";
             case REFUNDED -> "Refunded";
         };
-        return new OrderStatusResponse(order.getStatus(), message);
+        return new OrderStatusResponse(order.getStatus(), message, order.getAmount().doubleValue());
     }
 
     @Transactional

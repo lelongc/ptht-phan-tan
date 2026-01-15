@@ -4,5 +4,6 @@ import com.ebook.enums.OrderStatus;
 
 public record OrderStatusResponse(
         OrderStatus status,
-        String message
+        String message,
+        double amount
 ) { }
