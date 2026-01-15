@@ -52,13 +52,14 @@ public class Ebook extends BaseEntity {
     private String coverUrl;
 
     @NotBlank
+    @Column(name = "s3_key")
     private String s3Key;
 
+    @Column(name = "file_size_mb")
     private BigDecimal fileSizeMb;
 
+    @Column(name = "page_count")
     private Integer pageCount;
-
-    private String category;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
