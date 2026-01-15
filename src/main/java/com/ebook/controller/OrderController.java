@@ -17,9 +17,11 @@ import com.ebook.service.OrderService;
 import com.ebook.service.PaypalService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/orders")
 @RequiredArgsConstructor
@@ -30,13 +32,22 @@ public class OrderController {
 
     @PostMapping
     public ResponseEntity<?> createOrder(@Validated @RequestBody CreateOrderRequest request) {
-        // Check if email already has a paid order
-        if (orderService.hasEmailPaidOrder(request.email())) {
+        try {
+            log.info("Creating order for email: {}", request.email());
+            // Check if email already has a paid order
+            if (orderService.hasEmailPaidOrder(request.email())) {
+                log.warn("Email already paid: {}", request.email());
+                Map<String, String> error = new HashMap<>();
+                error.put("error", "This email has already paid");
+                return ResponseEntity.badRequest().body(error);
+            }
+            return ResponseEntity.ok(orderService.createOrder(request));
+        } catch (Exception e) {
+            log.error("Error creating order", e);
             Map<String, String> error = new HashMap<>();
-            error.put("error", "This email has already paid");
-            return ResponseEntity.badRequest().body(error);
+            error.put("error", e.getMessage());
+            return ResponseEntity.status(500).body(error);
         }
-        return ResponseEntity.ok(orderService.createOrder(request));
     }
 
     @GetMapping("/{secretCode}/status")
