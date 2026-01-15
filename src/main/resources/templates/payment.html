@@ -10,7 +10,7 @@
 <body class="bg-light">
 <div class="container py-5" style="max-width: 820px;">
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3>Thanh toán</h3>
+        <h3 th:text="#{app.payment_title}">Payment</h3>
         <div>
             <a href="?lang=vi" class="me-2">VI</a>
             <a href="?lang=en">EN</a>
@@ -18,12 +18,12 @@
     </div>
 
     <div class="card shadow-sm p-4">
-        <p class="mb-1"><strong>Ebook:</strong> <span th:text="${ebook.title}">Ebook</span></p>
-        <p class="mb-1"><strong>Giá:</strong> <span th:text="${order.amount}"></span> VND</p>
-        <p class="mb-3"><strong>Mã đơn:</strong> <code th:text="${secretCode}">CODE</code></p>
+        <p class="mb-1"><strong th:text="#{app.ebook_label}">Ebook:</strong> <span th:text="${ebook.title}">Ebook</span></p>
+        <p class="mb-1"><strong th:text="#{app.price_label}">Price:</strong> <span th:text="${order.amount}"></span> VND</p>
+        <p class="mb-3"><strong th:text="#{app.order_code}">Order Code:</strong> <code th:text="${secretCode}">CODE</code></p>
 
         <div class="text-center mb-4">
-            <h5>Chọn phương thức thanh toán</h5>
+            <h5 th:text="#{app.choose_payment}">Choose payment method</h5>
             <ul class="nav nav-tabs justify-content-center mb-3" role="tablist">
                 <li class="nav-item" role="presentation">
                     <button class="nav-link active" id="vietqr-tab" data-bs-toggle="tab" data-bs-target="#vietqr-panel" type="button">VietQR</button>
@@ -34,18 +34,18 @@
             </ul>
             <div class="tab-content">
                 <div class="tab-pane fade show active" id="vietqr-panel" role="tabpanel">
-                    <p class="mb-2">Quét mã VietQR để thanh toán</p>
+                    <p class="mb-2" th:text="#{app.scan_qr}">Scan VietQR code to pay</p>
                     <img th:src="${qrUrl}" alt="VietQR" class="img-fluid" style="max-width:360px;">
                 </div>
                 <div class="tab-pane fade" id="paypal-panel" role="tabpanel">
-                    <button class="btn btn-primary btn-lg" id="btnPayPalMock" style="margin-top: 20px;">Pay with PayPal (Mock Demo)</button>
+                    <button class="btn btn-primary btn-lg" id="btnPayPalMock" style="margin-top: 20px;" th:text="#{app.paypal_mock}">Pay with PayPal (Mock Demo)</button>
                 </div>
             </div>
         </div>
 
         <div class="mt-4">
-            <div id="status" class="alert alert-info">Đang chờ thanh toán...</div>
-            <button class="btn btn-outline-secondary btn-sm" id="btnRefresh">Tải lại trang</button>
+            <div id="status" class="alert alert-info" th:text="#{app.waiting_payment}">Waiting for payment...</div>
+            <button class="btn btn-outline-secondary btn-sm" id="btnRefresh" th:text="#{app.reload_page}">Reload page</button>
         </div>
 
         <!-- Hidden data for JS -->

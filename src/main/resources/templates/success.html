@@ -10,10 +10,10 @@
 <body class="bg-light">
 <div class="container py-5" style="max-width: 720px;">
     <div class="card shadow-sm p-4">
-        <h4>Thanh toán thành công!</h4>
-        <p>Chúng tôi sẽ gửi link tải về qua email của bạn.</p>
-        <p><strong>Mã đơn:</strong> <code th:text="${secretCode}">CODE</code></p>
-        <a href="/" class="btn btn-primary mt-3">Về trang chủ</a>
+        <h4 th:text="#{app.success_title}">Payment Successful!</h4>
+        <p th:text="#{app.success_message}">We will send the download link to your email.</p>
+        <p><strong th:text="#{app.order_code}">Order Code:</strong> <code th:text="${secretCode}">CODE</code></p>
+        <a href="/" class="btn btn-primary mt-3" th:text="#{app.back_home}">Back to Home</a>
     </div>
 </div>
 </body>
