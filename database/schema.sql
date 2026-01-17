@@ -1,4 +1,11 @@
 -- ===================================================
+-- CREATE DATABASE & SET CHARSET
+-- ===================================================
+DROP DATABASE IF EXISTS ebook_store;
+CREATE DATABASE ebook_store CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+USE ebook_store;
+
+-- ===================================================
 -- EBOOK STORE - SIMPLIFIED SCHEMA (1 ebook only)
 -- ===================================================
 
@@ -14,7 +21,7 @@ CREATE TABLE IF NOT EXISTS users (
   
   INDEX idx_user_email (email),
   INDEX idx_user_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ============ EBOOK TABLE (1 ebook, multi-lang) ============
 CREATE TABLE IF NOT EXISTS ebooks (
@@ -42,7 +49,7 @@ CREATE TABLE IF NOT EXISTS ebooks (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   
   INDEX idx_ebook_status (status)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ============ ORDERS TABLE ============
 CREATE TABLE IF NOT EXISTS orders (
@@ -80,7 +87,7 @@ CREATE TABLE IF NOT EXISTS orders (
   INDEX idx_order_secret (secret_code),
   INDEX idx_order_user (user_id),
   INDEX idx_order_created (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ============ DOWNLOAD TOKENS TABLE ============
 CREATE TABLE IF NOT EXISTS download_tokens (
@@ -99,7 +106,7 @@ CREATE TABLE IF NOT EXISTS download_tokens (
   
   INDEX idx_token (token),
   INDEX idx_token_expires (expires_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 -- ============ WEBHOOK LOGS TABLE (for debugging) ============
 CREATE TABLE IF NOT EXISTS webhook_logs (
@@ -118,4 +125,4 @@ CREATE TABLE IF NOT EXISTS webhook_logs (
   INDEX idx_webhook_provider (provider),
   INDEX idx_webhook_order (order_id),
   INDEX idx_webhook_created (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

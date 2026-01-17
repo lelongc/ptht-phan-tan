@@ -66,6 +66,11 @@ public class Ebook extends BaseEntity {
     private EbookStatus status = EbookStatus.ACTIVE;
 
     public String getTitle(Locale locale) {
+        // Nếu title_vi chứa "ebook.title", lấy từ message source
+        if (titleVi != null && titleVi.startsWith("ebook.")) {
+            // Trong service, sẽ resolve message
+            return titleVi;
+        }
         return locale != null && "en".equalsIgnoreCase(locale.getLanguage()) ? titleEn : titleVi;
     }
 
