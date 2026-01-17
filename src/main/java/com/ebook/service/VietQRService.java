@@ -11,13 +11,13 @@ import org.springframework.stereotype.Service;
 @Service
 public class VietQRService {
 
-    @Value("${vietqr.bank-code:MB}")
+    @Value("${vietqr.bank-code}")
     private String bankCode;
 
-    @Value("${vietqr.account-number:0987214065}")
+    @Value("${vietqr.account-number}")
     private String accountNumber;
 
-    @Value("${vietqr.account-name:Long%20Ebook}")
+    @Value("${vietqr.account-name}")
     private String accountName;
 
     public String buildQrImageUrl(BigDecimal amountVnd, String addInfo) {

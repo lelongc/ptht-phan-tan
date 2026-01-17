@@ -1,27 +1,76 @@
-Bạn đã có image `shima594/ebook:latest`, chỉ cần bật MySQL/Redis (từ docker-compose) rồi chạy container app gắn cùng network.
+# Hướng dẫn test local (dev/test lại nhiều lần)
 
-1) Bật DB + Redis:
-- Trong thư mục dự án: `docker compose up -d mysql redis`
+## 1. Chuẩn bị
 
-2) Chạy app dùng image đã pull:
-- Lấy đúng tên network do compose tạo (thường là `ptht-phan-tan_ebook-network`, kiểm tra bằng `docker network ls`).
-- Chạy:
-```
-docker build -t shima594/ebook:latest . && docker push shima594/ebook:latest
-docker compose down -v
+- Đảm bảo có file `.env.local` (hoặc `.env`) với đủ biến môi trường:`SPRING_DATASOURCE_URL`, `SPRING_REDIS_HOST`, `SPRING_REDIS_PORT`, `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, `PAYPAL_MODE`, `APP_JWT_SECRET`, `VIETQR_*`, v.v.
+- Network docker compose thường là `ptht-phan-tan_ebook-network` (xem bằng `docker network ls`).
+- DB/Redis sẽ tự seed dữ liệu mẫu khi volume mới.
+
+## 2. Chạy app lần đầu hoặc test lại
+
+```bash
+# Bật MySQL + Redis (tự seed DB nếu volume mới)
 docker compose up -d mysql redis
-sleep 25
+
+# Xóa container app cũ nếu có (không lỗi cũng không sao)
 docker rm -f ebook-app
-docker run --rm -p 8080:8080 --name ebook-app --network ptht-phan-tan_ebook-network \
-  -e SPRING_DATASOURCE_URL="jdbc:mysql://ebook-mysql:3306/ebook_store?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true" \
-  -e SPRING_DATASOURCE_USERNAME=ebook_user \
-  -e SPRING_DATASOURCE_PASSWORD=ebook_pass \
-  -e SPRING_REDIS_HOST=ebook-redis \
-  -e PAYPAL_CLIENT_ID=AX7LSpgFzXNVoLu_XfijxVW-NMjY9YPqRKUFfyV1egZc0yqOgtHKT1ruHVyqtp6Idv7B9VYvMPx4gYlL \
-  -e PAYPAL_CLIENT_SECRET=EAXWpSwQ_uGy8tt_8rZ4keEM-BUSqIDrSS7OS1QrkzX3CiElE9IhLQbjMlSUHFVI3UfQBZi_yj2aK4yA \
+
+# Chạy app (dùng env-file, gắn đúng network)
+docker run --rm -p 8080:8080 --name ebook-app \
+  --network ptht-phan-tan_ebook-network \
+  --env-file .env.local \
   shima594/ebook:latest
 ```
 
-3) Truy cập: http://localhost:8080
+- Truy cập: http://localhost:8080
+- Xem log app:
+  ```bash
+  docker logs -f ebook-app
+  ```
 
-Nếu network name khác, thay `ptht-phan-tan_ebook-network` bằng tên bạn thấy từ `docker network ls`. Volumes `mysql_data`/`redis_data` giữ dữ liệu; muốn reset DB: `docker compose down -v` rồi up lại.
+## 3. Reset sạch DB/Redis để test lại từ đầu
+
+```bash
+# Xóa toàn bộ dữ liệu DB + Redis (cẩn thận, sẽ mất hết data)
+docker compose down -v
+
+# Bật lại DB/Redis (sẽ tự tạo schema + seed)
+docker compose up -d mysql redis
+```
+
+- Sau đó chạy lại app như bước 2.
+
+## 4. Một số thao tác nhanh
+
+- **Xóa cache Redis (không xóa DB):**
+  ```bash
+  docker exec ebook-redis redis-cli FLUSHALL
+  ```
+- **Rebuild image local (nếu sửa code):**
+  ```bash
+  docker build -t shima594/ebook:latest . && docker push shima594/ebook:latest.
+  ```
+- **Kiểm tra network docker:**
+  ```bash
+  docker network ls
+  ```
+- **Kiểm tra volume dữ liệu:**
+  ```bash
+  docker volume ls
+  ```
+
+## 5. Lưu ý
+
+- Nếu network tên khác, thay `ptht-phan-tan_ebook-network` bằng tên bạn thấy từ `docker network ls`.
+- DB sẽ seed lại từ file `database/schema.sql` và `database/seed.sql` mỗi khi volume mới.
+- Có thể sửa giá ebook, tên, mô tả... trong file seed hoặc messages để test nhiều trường hợp.
+- Nếu lỗi port 8080, đổi sang port khác bằng `-p 8888:8080` (và truy cập http://localhost:8888).
+
+---
+
+**Tóm tắt:**Chỉ cần 3 lệnh:
+
+1. `docker compose up -d mysql redis`
+2. `docker rm -f ebook-app`
+3. `docker run ...` như trên
+   Muốn reset sạch: `docker compose down -v` rồi làm lại từ đầu.
