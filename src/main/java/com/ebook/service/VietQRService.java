@@ -14,10 +14,10 @@ public class VietQRService {
     @Value("${vietqr.bank-code:MB}")
     private String bankCode;
 
-    @Value("${vietqr.account-number:0000000000}")
+    @Value("${vietqr.account-number:0987214065}")
     private String accountNumber;
 
-    @Value("${vietqr.account-name:Shop%20Ebook}")
+    @Value("${vietqr.account-name:Long%20Ebook}")
     private String accountName;
 
     public String buildQrImageUrl(BigDecimal amountVnd, String addInfo) {

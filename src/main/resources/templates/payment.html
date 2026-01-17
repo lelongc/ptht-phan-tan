@@ -19,7 +19,7 @@
 
     <div class="card shadow-sm p-4">
         <p class="mb-1"><strong th:text="#{app.ebook_label}">Ebook:</strong> <span th:text="${ebookTitle}">Ebook</span></p>
-        <p class="mb-1"><strong th:text="#{app.price_label}">Price:</strong> <span th:text="#{app.book_price}"></span> <span th:text="#{app.currency}">USD</span></p>
+        <p class="mb-1"><strong th:text="#{app.price_label}">Price:</strong> <span th:text="${order.amount}"></span> <span th:text="#{app.currency}">VND</span></p>
         <p class="mb-3"><strong th:text="#{app.order_code}">Order Code:</strong> <code th:text="${secretCode}">CODE</code></p>
 
         <div class="text-center mb-4">
@@ -38,7 +38,7 @@
                     <img th:src="${qrUrl}" alt="VietQR" class="img-fluid" style="max-width:360px;">
                 </div>
                 <div class="tab-pane fade" id="paypal-panel" role="tabpanel">
-                    <div id="paypal-container" style="margin-top: 20px;"></div>
+                    <div id="paypal-container" style="margin-top: 20px; min-height: 400px;"></div>
                 </div>
             </div>
         </div>
