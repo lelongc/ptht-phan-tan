@@ -32,7 +32,7 @@ public class WebhookController {
     // Thêm webhook cho SePay
     @PostMapping("/sepay")
     public ResponseEntity<String> sepayWebhook(@RequestBody Map<String, Object> payload) {
-        System.out.println("SePay payload: " + payload);
+        // System.out.println("SePay payload: " + payload);
         String description = (String) payload.get("description");
         String status = (String) payload.get("status"); // Có thể null, tuỳ payload SePay
 

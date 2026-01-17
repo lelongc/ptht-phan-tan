@@ -21,3 +21,6 @@ triển khai demo test quay video chỉ cần tầm 10h là đủ . bạn đọc
 hiện tại đã thanh toán được bằng paypal , hiển thị web ok và thanh toán qr muốn sửa tiền vô 
 
 /workspaces/ptht-phan-tan/src/main/resources/i18n/messages_vi.properties sửa tiền nó sẽ tự động sửa tiền cả web , chưa test vietqr hoạt động , chưa test 
+
+
+
