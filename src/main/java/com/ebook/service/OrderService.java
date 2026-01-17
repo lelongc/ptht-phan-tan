@@ -47,8 +47,8 @@ public class OrderService {
         Ebook ebook = resolveEbook(request.ebookId());
         User user = findOrCreateUser(request.email());
 
-        // Lấy giá từ messages (theo locale)
-        BigDecimal price = priceService.getPrice(Locale.forLanguageTag("vi")); // Hoặc lấy từ request
+        // Lấy giá VND từ i18n (vi)
+        BigDecimal price = priceService.getPriceVnd();
 
         String secretCode = RandomUtil.randomCode(12);
         Instant now = Instant.now();

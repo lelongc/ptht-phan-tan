@@ -100,9 +100,5 @@ public class PaypalService {
             return false;
         }
     }
-
-    public boolean isSandbox() {
-        return "sandbox".equalsIgnoreCase(mode);
-    }
 }
 

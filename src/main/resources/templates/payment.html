@@ -38,7 +38,7 @@
                     <img th:src="${qrUrl}" alt="VietQR" class="img-fluid" style="max-width:360px;">
                 </div>
                 <div class="tab-pane fade" id="paypal-panel" role="tabpanel">
-                    <div id="paypal-container" style="margin-top: 20px; min-height: 400px;"></div>
+                    <div id="paypal-container" style="margin-top: 20px; min-height: 400px; padding-bottom: 48px;"></div>
                 </div>
             </div>
         </div>
@@ -67,7 +67,8 @@
 <script th:inline="javascript">
 (function() {
     const secret = document.getElementById('data-secret').textContent.trim();
-    const usdAmount = parseFloat(document.getElementById('data-amount').textContent.trim());
+    const vndAmount = parseFloat(document.getElementById('data-amount').textContent.trim());
+    const usdAmount = (vndAmount / 25000).toFixed(2);  // VND to USD conversion
     const clientId = document.getElementById('data-clientid').textContent.trim();
     const statusEl = document.getElementById('status');
     const btnRefresh = document.getElementById('btnRefresh');
@@ -79,7 +80,7 @@
     const MSG_ERROR = document.getElementById('i18n-error').textContent;
     const MSG_PROCESSING = document.getElementById('i18n-processing').textContent;
 
-    console.log('Secret:', secret, 'USD Amount:', usdAmount);
+    console.log('Secret:', secret, 'VND Amount:', vndAmount, 'USD Amount:', usdAmount);
 
     async function poll() {
         try {

@@ -38,14 +38,15 @@ public class PageController {
         String title = messageSource.getMessage(ebook.getTitleVi(), null, ebook.getTitleVi(), locale);
         String author = messageSource.getMessage(ebook.getAuthorVi(), null, ebook.getAuthorVi(), locale);
         String description = messageSource.getMessage(ebook.getDescriptionVi(), null, ebook.getDescriptionVi(), locale);
-        String price = messageSource.getMessage("ebook.price", null, "10000", locale);
-        
+        BigDecimal displayPrice = priceService.getDisplayPrice(locale);
+        String currency = priceService.getDisplayCurrency(locale);
+        model.addAttribute("currency", currency);
         model.addAttribute("ebook", new EbookResponse(
             ebook.getId(),
             title,
             author,
             description,
-            new BigDecimal(price),
+            displayPrice,
             ebook.getCoverUrl()
         ));
         return "index";
@@ -64,14 +65,10 @@ public class PageController {
         if (order.getPaymentMethod() != null && order.getPaymentMethod().name().equals("VIETQR")) {
             qrUrl = vietQRService.buildQrImageUrl(order.getAmount(), "ORDER-" + secretCode);
         }
-        String paypalUrl = order.getPaymentMethod() != null && order.getPaymentMethod().name().equals("PAYPAL")
-                ? "https://www.sandbox.paypal.com/checkoutnow?token=" + secretCode
-                : null;
         model.addAttribute("order", order);
         model.addAttribute("ebookTitle", title);
         model.addAttribute("secretCode", secretCode);
         model.addAttribute("qrUrl", qrUrl);
-        model.addAttribute("paypalUrl", paypalUrl);
         return "payment";
     }
 
