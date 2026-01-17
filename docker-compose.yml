@@ -41,6 +41,25 @@ services:
     networks:
       - ebook-network
 
+  app:
+    image: shima594/ebook:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ebook-app
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env.local
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ebook-network
+    restart: unless-stopped
+
 volumes:
   mysql_data:
   redis_data:
