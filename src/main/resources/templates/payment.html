@@ -19,7 +19,11 @@
 
     <div class="card shadow-sm p-4">
         <p class="mb-1"><strong th:text="#{app.ebook_label}">Ebook:</strong> <span th:text="${ebookTitle}">Ebook</span></p>
-        <p class="mb-1"><strong th:text="#{app.price_label}">Price:</strong> <span th:text="${order.amount}"></span> <span th:text="#{app.currency}">VND</span></p>
+        <p class="mb-1">
+          <strong th:text="#{app.price_label}">Price:</strong>
+          <span th:text="${displayAmount}"></span>
+          <span th:text="${currency}">VND</span>
+        </p>
         <p class="mb-3"><strong th:text="#{app.order_code}">Order Code:</strong> <code th:text="${secretCode}">CODE</code></p>
 
         <div class="text-center mb-4">

@@ -31,4 +31,12 @@ public class PriceService {
     public String getDisplayCurrency(Locale locale) {
         return (locale != null && "en".equalsIgnoreCase(locale.getLanguage())) ? "USD" : "VND";
     }
+
+    // Convert any VND amount to a locale-aware display amount (USD for en, VND otherwise)
+    public BigDecimal toDisplayAmount(BigDecimal vnd, Locale locale) {
+        if (locale != null && "en".equalsIgnoreCase(locale.getLanguage())) {
+            return vnd.divide(VND_PER_USD, 2, RoundingMode.HALF_UP);
+        }
+        return vnd;
+    }
 }

@@ -65,11 +65,16 @@ public class PageController {
         if (order.getPaymentMethod() != null && order.getPaymentMethod().name().equals("VIETQR")) {
             qrUrl = vietQRService.buildQrImageUrl(order.getAmount(), "ORDER-" + secretCode);
         }
-        model.addAttribute("order", order);
-        model.addAttribute("ebookTitle", title);
-        model.addAttribute("secretCode", secretCode);
-        model.addAttribute("qrUrl", qrUrl);
-        return "payment";
+        // Display amount + currency consistent with locale
+        BigDecimal displayAmount = priceService.toDisplayAmount(order.getAmount(), locale);
+        String currency = priceService.getDisplayCurrency(locale);
+         model.addAttribute("order", order);
+         model.addAttribute("ebookTitle", title);
+         model.addAttribute("secretCode", secretCode);
+         model.addAttribute("qrUrl", qrUrl);
+         model.addAttribute("displayAmount", displayAmount);
+         model.addAttribute("currency", currency);
+         return "payment";
     }
 
     @GetMapping("/success")
