@@ -16,3 +16,8 @@ và 2 ngôn ngữ web là tiếng việt và anh
 bằng java 
 triển khai production-like sao cho rẻ nhất có thể chỉ muốn mất vài đô là cùng 
 triển khai demo test quay video chỉ cần tầm 10h là đủ . bạn đọc file plan  nè 
+
+
+hiện tại đã thanh toán được bằng paypal , hiển thị web ok và thanh toán qr muốn sửa tiền vô 
+
+/workspaces/ptht-phan-tan/src/main/resources/i18n/messages_vi.properties sửa tiền nó sẽ tự động sửa tiền cả web , chưa test vietqr hoạt động , chưa test 

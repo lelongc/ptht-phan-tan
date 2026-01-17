@@ -7,6 +7,11 @@ Bạn đã có image `shima594/ebook:latest`, chỉ cần bật MySQL/Redis (t�
 - Lấy đúng tên network do compose tạo (thường là `ptht-phan-tan_ebook-network`, kiểm tra bằng `docker network ls`).
 - Chạy:
 ```
+docker build -t shima594/ebook:latest . && docker push shima594/ebook:latest
+docker compose down -v
+docker compose up -d mysql redis
+sleep 25
+docker rm -f ebook-app
 docker run --rm -p 8080:8080 --name ebook-app --network ptht-phan-tan_ebook-network \
   -e SPRING_DATASOURCE_URL="jdbc:mysql://ebook-mysql:3306/ebook_store?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=utf8&useUnicode=true" \
   -e SPRING_DATASOURCE_USERNAME=ebook_user \
