@@ -3,6 +3,7 @@ package com.ebook.service;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderService {
 
+    private final PriceService priceService;
     private final UserRepository userRepository;
     private final EbookRepository ebookRepository;
     private final OrderRepository orderRepository;
@@ -45,13 +47,16 @@ public class OrderService {
         Ebook ebook = resolveEbook(request.ebookId());
         User user = findOrCreateUser(request.email());
 
+        // Lấy giá từ messages (theo locale)
+        BigDecimal price = priceService.getPrice(Locale.forLanguageTag("vi")); // Hoặc lấy từ request
+
         String secretCode = RandomUtil.randomCode(12);
         Instant now = Instant.now();
 
         Order order = Order.builder()
                 .user(user)
                 .ebook(ebook)
-                .amount(ebook.getPrice())
+                .amount(price)  // ← Dùng giá từ messages
                 .status(OrderStatus.PENDING)
                 .paymentMethod(request.paymentMethod())
                 .secretCode(secretCode)
@@ -66,10 +71,10 @@ public class OrderService {
         String qrUrl = null;
 
         if (request.paymentMethod() == PaymentMethod.VIETQR) {
-            qrUrl = vietQRService.buildQrImageUrl(ebook.getPrice(), addInfo);
+            qrUrl = vietQRService.buildQrImageUrl(price, addInfo);
             paymentUrl = qrUrl;
         } else {
-            paymentUrl = "paypal"; // PayPal will be handled in payment page
+            paymentUrl = "paypal";
         }
 
         return new CreateOrderResponse(secretCode, paymentUrl, qrUrl);

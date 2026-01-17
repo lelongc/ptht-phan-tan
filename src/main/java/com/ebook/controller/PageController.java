@@ -1,5 +1,6 @@
 package com.ebook.controller;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 
 import org.springframework.context.MessageSource;
@@ -15,6 +16,7 @@ import com.ebook.repository.EbookRepository;
 import com.ebook.enums.EbookStatus;
 import com.ebook.service.OrderService;
 import com.ebook.service.VietQRService;
+import com.ebook.service.PriceService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,23 +28,24 @@ public class PageController {
     private final OrderService orderService;
     private final VietQRService vietQRService;
     private final MessageSource messageSource;
+    private final PriceService priceService;
 
     @GetMapping("/")
     public String home(Locale locale, Model model) {
         Ebook ebook = ebookRepository.findFirstByStatus(EbookStatus.ACTIVE)
                 .orElseThrow(() -> new IllegalStateException("No active ebook found"));
         
-        // Resolve i18n từ DB key
         String title = messageSource.getMessage(ebook.getTitleVi(), null, ebook.getTitleVi(), locale);
         String author = messageSource.getMessage(ebook.getAuthorVi(), null, ebook.getAuthorVi(), locale);
         String description = messageSource.getMessage(ebook.getDescriptionVi(), null, ebook.getDescriptionVi(), locale);
+        String price = messageSource.getMessage("ebook.price", null, "10000", locale);
         
         model.addAttribute("ebook", new EbookResponse(
             ebook.getId(),
             title,
             author,
             description,
-            ebook.getPrice(),
+            new BigDecimal(price),
             ebook.getCoverUrl()
         ));
         return "index";

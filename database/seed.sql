@@ -22,7 +22,7 @@ INSERT INTO ebooks (
   'ebook.author',
   'ebook.description',
   'ebook.description',
-  10000,
+  1,  -- Placeholder, giá thực lấy từ messages
   '/images/covers/amazon-web-services-aws-920x613.jpg',
   'ebooks/demo.pdf',
   2.5,
